@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import postgres from 'postgres';
+import sql from '../db';
 
-const sql = postgres(process.env.DATABASE_URL!, {
-    ssl: false,
-  });
   
 export async function GET() {
   const nums = await sql`SELECT * FROM numbers ORDER BY id ASC`;

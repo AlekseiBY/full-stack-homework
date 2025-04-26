@@ -14,6 +14,18 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  test-db:
+    image: postgres:15
+    container_name: postgres-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testdb
+    ports:
+      - '5433:5432'  # Listen on a different port (5433 externally)
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   web:
     build: .
@@ -21,9 +33,33 @@ services:
     ports:
       - '3000:3000'
     environment:
+      NODE_ENV: development
       DATABASE_URL: postgres://postgres:postgres@db:5432/mydb
     depends_on:
       - db
 
+  web-test:
+    build: .
+    container_name: next-app-test-web
+    ports:
+      - '3001:3000'
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@test-db:5432/testdb
+    depends_on:
+      - test-db
+
+  test-runner:
+    build: .
+    container_name: next-app-test
+    command: pnpm test
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@test-db:5432/testdb
+    depends_on:
+      - test-db
+      - web-test
+
 volumes:
   pgdata:
+  pgdata-test:

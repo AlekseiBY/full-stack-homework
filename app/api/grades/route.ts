@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import postgres from 'postgres';
-
-const sql = postgres(process.env.DATABASE_URL!, { ssl: false });
+import sql from '../db';
 
 export async function GET() {
   const rows = await sql`SELECT * FROM grades ORDER BY id ASC`;
