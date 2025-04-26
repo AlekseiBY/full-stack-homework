@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS numbers (
+  id SERIAL PRIMARY KEY,
+  value INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS grades (
+  id SERIAL PRIMARY KEY,
+  class VARCHAR(20) NOT NULL CHECK (class IN ('Math', 'Science', 'History')),
+  grade INTEGER NOT NULL CHECK (grade BETWEEN 0 AND 100)
+);
